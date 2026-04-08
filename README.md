@@ -1,10 +1,13 @@
+# To install dependencies:
+`npm i`
+
 # To test:
 `npm run dev`
 
 # To build:
 `npm run build`
 
-# To deploy to github pages
+# To deploy to github pages:
 Build before doing this.
 
 `npm run deploy`
