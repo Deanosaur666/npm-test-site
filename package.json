@@ -15,8 +15,8 @@
   },
   "dependencies": {
     "graphology": "^0.26.0",
+    "octokit": "^5.0.5",
     "sigma": "^3.0.2"
   },
-
   "homepage": "https://deanosaur666.github.io/npm-test-site"
 }

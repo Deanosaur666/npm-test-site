@@ -1,5 +1,6 @@
 import Graph from "graphology";
 import Sigma from "sigma";
+import { Octokit, App } from "octokit";
 
 const graph = new Graph();
 graph.addNode("1", { label: "Node 1", x: 0, y: 0, size: 10, color: "red" });
