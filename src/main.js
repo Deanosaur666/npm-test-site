@@ -42,7 +42,6 @@ for (let i = 0; i < graph_json.length; i++) {
     for (let j = 0; j < node.edges.length; j ++) {
         let target = node.edges[j]
         let edge = [node.id, target]
-        console.log(edge)
         edges.push([node.id, target])
     }
 }
