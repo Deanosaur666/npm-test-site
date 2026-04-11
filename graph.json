@@ -1,0 +1,37 @@
+[
+    {
+        "id" : "1",
+        "label" : "1",
+        "x" : 0,
+        "y" : 0,
+        "size" : 10,
+        "color" : "red",
+        "edges" : [ "2" ]
+    },
+    {
+        "id" : "2",
+        "label" : "2",
+        "x" : 1,
+        "y" : 1,
+        "size" : 20,
+        "color" : "green",
+        "edges" : [ ]
+    },
+    {
+        "id" : "3",
+        "label" : "3",
+        "x" : 0,
+        "y" : 1,
+        "size" : 20,
+        "color" : "yellow",
+        "edges" : [ "1", "4" ]
+    },
+    {
+        "id" : "4",
+        "x" : 1,
+        "y" : 0,
+        "size" : 5,
+        "color" : "red",
+        "edges" : [ ]
+    }
+]
