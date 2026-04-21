@@ -6,7 +6,16 @@ import { Octokit, App } from "octokit";
 // https://github.com/Deanosaur666/npm-test-site/blob/graph.json
 // using github API
 
-const octokit = new Octokit();
+const octokit = new Octokit({
+    userAgent : "Dean's npm test site"
+});
+
+function ghAuth() {
+    let authToken = document.getElementById("ghtoken").value;
+    console.log(authToken)
+}
+
+document.getElementById("authButton").addEventListener("click", ghAuth, false);
 
 async function loadGraph() {
 
