@@ -3,6 +3,7 @@ import Sigma from "sigma";
 import circular from "graphology-layout/circular";
 import forceAtlas2 from "graphology-layout-forceatlas2";
 import { Octokit, App } from "octokit";
+import { Buffer } from 'buffer';
 
 // get graph JSON from:
 // https://github.com/Deanosaur666/npm-test-site/blob/graph.json
@@ -13,6 +14,7 @@ let octokit = new Octokit({
 });
 
 let username = "";
+let email = "";
 const output = document.getElementById("output");
 output.textContent = "Welcome";
 const usernameField = document.getElementById("username");
@@ -52,6 +54,11 @@ async function ghAuth() {
 
 }
 
+let sha = ""
+let graph_owner = "Deanosaur666";
+let graph_repo = "npm-test-site";
+let graph_path = "graph.json"
+
 document.getElementById("ghtoken").value = "";
 document.getElementById("authButton").addEventListener("click", ghAuth, false);
 document.getElementById("addNodeButton").addEventListener("click", addNodeButton, false);
@@ -63,10 +70,12 @@ async function loadGraph() {
 
     // API request
     let result = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
-        owner: 'Deanosaur666',
-        repo: 'npm-test-site',
-        path: 'graph.json',
+        owner: graph_owner,
+        repo: graph_repo,
+        path: graph_path,
     })
+    
+    sha = result.data.sha;
 
     // Decode Base64 content to text
     let decodedContent = atob(result.data.content);
@@ -176,6 +185,32 @@ function removeNodeButton() {
     regenGraph(graph_json);
 }
 
-function uploadButton() {
-    console.log("UPLOAD")
+async function uploadButton() {
+    if(!username) {
+        output.innerText = "You must authenticate with a GitHub personal access token."
+        return;
+    }
+
+    const content = Buffer.from(JSON.stringify(graph_json)).toString('base64');
+    const fileContent = await octokit.rest.repos.createOrUpdateFileContents({
+        owner: graph_owner,
+        repo: graph_repo,
+        path: graph_path,
+        branch: "main",
+        sha: sha,
+        message: "Update graph from site UI",
+        content,
+        committer: {
+            name: username,
+            email: `${username}@github.com`
+        },
+        author: {
+            name: username,
+            email: `${username}@github.com`
+        }
+    });
+
+    const { commit: { html_url } } = fileContent.data;
+
+    output.innerText = `Content updated, see changes at ${html_url}`;
 }
