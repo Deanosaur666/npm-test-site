@@ -89,7 +89,7 @@ async function loadGraph() {
 
 let graph_json = null;
 let renderer = null;
-reloadGraph();
+await reloadGraph();
 
 async function reloadGraph() {
     graph_json = await loadGraph()
@@ -200,14 +200,6 @@ async function uploadButton() {
         sha: sha,
         message: "Update graph from site UI",
         content,
-        committer: {
-            name: username,
-            email: `${username}@github.com`
-        },
-        author: {
-            name: username,
-            email: `${username}@github.com`
-        }
     });
 
     const { commit: { html_url } } = fileContent.data;
