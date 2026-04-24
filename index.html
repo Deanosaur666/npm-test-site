@@ -4,10 +4,46 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>npm-test-site</title>
-    <script type="module" crossorigin src="./assets/index-6FC1tn82.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-DFXCuhtX.css">
+    <script type="module" crossorigin src="./assets/index-B0Pb7L9X.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-CXc4XYEq.css">
   </head>
   <body>
+    <div id="username"></div>
+    <pre id="output"></pre>
+    <div>
+      <label for="ghtoken">Github personal access token:</label>
+      <input type="password" name="ghtoken" id="ghtoken" placeholder="Enter GitHub Token">
+      <button id="authButton">Authenticate</button>
+    </div>
+    <div>
+      <label for="nodeIDInput">Node ID:</label>
+      <input type="text" id="nodeIDInput">
+    </div>
+    <div>
+      <label for="nodeColorInput">Node Color:</label>
+      <input type="text" id="nodeColorInput">
+    </div>
+    <div>
+      <label for="nodeSizeInput">Node Size:</label>
+      <input type="number" id="nodeSizeInput">
+    </div>
+    <div>
+      <label for="nodeEdgesInput">Node Edges (comma separated):</label>
+      <input type="text" id="nodeEdgesInput">
+    </div>
+    <div>
+      <button id="addNodeButton">Add Node</button>
+    </div>
+    <div>
+      <button id="removeNodeButton">Remove Node</button>
+    </div>
+    <div>
+      <button id="uploadButton">Upload Graph</button>
+    </div>
+    <div>
+      <button id="reloadButton">Reload Graph</button>
+    </div>
+    <hr>
     <div id="container" style="width: 800px; height: 600px;"></div>
   </body>
 </html>
