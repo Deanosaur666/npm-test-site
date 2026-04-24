@@ -1,21 +1,63 @@
 import Graph from "graphology";
 import Sigma from "sigma";
+import circular from "graphology-layout/circular";
+import forceAtlas2 from "graphology-layout-forceatlas2";
 import { Octokit, App } from "octokit";
 
 // get graph JSON from:
 // https://github.com/Deanosaur666/npm-test-site/blob/graph.json
 // using github API
 
-const octokit = new Octokit({
+let octokit = new Octokit({
     userAgent : "Dean's npm test site"
 });
 
-function ghAuth() {
+let username = "";
+const output = document.getElementById("output");
+output.textContent = "Welcome";
+const usernameField = document.getElementById("username");
+
+usernameField.textContent = "USER: NONE"
+
+async function ghAuth() {
     let authToken = document.getElementById("ghtoken").value;
-    console.log(authToken)
+    usernameField.textContent = "USER: NONE"
+    username = "";
+    if (!authToken) {
+      output.textContent = 'Please enter a token';
+      return;
+    }
+
+    // Re-instantiate Octokit with the user's token
+    octokit = new Octokit({ auth: authToken });
+
+    try {
+      
+        // Test authentication
+        const { data } = await octokit.request('GET /user');
+        username = data.login;
+        output.textContent = `Logged in as: ${username}`;
+        usernameField.textContent = `USER: ${username}`
+        return true;
+      
+    }
+    catch (error) {
+        if (error.status === 401) {
+            output.textContent = 'Invalid token';
+        } else {
+            output.textContent = 'Error: ' + error.message;
+        }
+        return false;
+    }
+
 }
 
+document.getElementById("ghtoken").value = "";
 document.getElementById("authButton").addEventListener("click", ghAuth, false);
+document.getElementById("addNodeButton").addEventListener("click", addNodeButton, false);
+document.getElementById("removeNodeButton").addEventListener("click", removeNodeButton, false);
+document.getElementById("uploadButton").addEventListener("click", uploadButton, false);
+document.getElementById("reloadButton").addEventListener("click", reloadGraph, false);
 
 async function loadGraph() {
 
@@ -36,39 +78,104 @@ async function loadGraph() {
     
 }
 
-let graph_json = await loadGraph()
+let graph_json = null;
+let renderer = null;
+reloadGraph();
 
-console.log("Graph: ")
-console.log(graph_json)
+async function reloadGraph() {
+    graph_json = await loadGraph()
+    regenGraph(graph_json)
+}
 
-let graph = new Graph();
+function regenGraph(graph_json) {
+    let graph = new Graph({
+        multi: true
+    });
 
-let edges = []
+    if(renderer) {
+        renderer.kill();
+        renderer = null;
+    }
 
-for (let i = 0; i < graph_json.length; i++) {
-    let node = graph_json[i];
-    graph.addNode(node.id, node);
-    for (let j = 0; j < node.edges.length; j ++) {
-        let target = node.edges[j]
-        let edge = [node.id, target]
-        edges.push([node.id, target])
+    // Clear container
+    while (container.firstChild) {
+        container.removeChild(container.firstChild);
+    }
+
+
+    let edges = []
+
+    for (let i = 0; i < graph_json.length; i++) {
+        let node = graph_json[i];
+        if(!Object.hasOwn(node, "label") || !node.label) {
+            node.label = node.id;
+        }
+        node.forceLabel = true;
+
+        graph.addNode(node.id, node);
+        for (let j = 0; j < node.edges.length; j ++) {
+            let target = node.edges[j]
+            let edge = [node.id, target]
+            edges.push([node.id, target])
+        }
+    }
+
+    for (let i = 0; i < edges.length; i ++) {
+        if(graph.hasNode(edges[i][0]) && graph.hasNode(edges[i][1]))
+            graph.addEdge(edges[i][0], edges[i][1])
+    }
+
+    circular.assign(graph);
+    const settings = forceAtlas2.inferSettings(graph);
+    settings.gravity = 0.1;
+    settings.scalingRatio = 10;
+    forceAtlas2.assign(graph, { settings, iterations: 2});
+
+    renderer = new Sigma(graph, document.getElementById("container"), {
+        labelSize: 14,
+        labelWeight: "bold",
+        labelColor: { color: "red" },
+    });
+}
+
+function addNodeButton() {
+    let nodeID = document.getElementById("nodeIDInput").value;
+    let nodeColor = document.getElementById("nodeColorInput").value;
+    let nodeSize = document.getElementById("nodeSizeInput").value;
+    let nodeEdges = document.getElementById("nodeEdgesInput").value.split(",").map(item => item.trim());
+
+    if(nodeID && nodeColor && nodeSize) {
+        
+
+        let old_node = graph_json.find((e) => e.id == nodeID);
+
+        if(old_node) {
+            old_node.size = nodeSize;
+            old_node.color = nodeColor;
+            old_node.edges = nodeEdges;
+        }
+        else {
+            let node = {
+                "id" : nodeID,
+                "size" : nodeSize,
+                "color" : nodeColor,
+                "edges" : nodeEdges
+            };
+            graph_json.push(node);
+        }
+        regenGraph(graph_json);
+        output.textContent = "Node added.";
+    }
+    else {
+        output.textContent = "Please input node ID, color, and size.";
     }
 }
 
-for (let i = 0; i < edges.length; i ++) {
-    graph.addEdge(edges[i][0], edges[i][1])
-}
-
-const renderer = new Sigma(graph, document.getElementById("container"));
-
-function addNodeButton() {
-
-}
-
 function removeNodeButton() {
-
+    graph_json.pop();
+    regenGraph(graph_json);
 }
 
-function saveButton() {
-
+function uploadButton() {
+    console.log("UPLOAD")
 }

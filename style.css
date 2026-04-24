@@ -1,3 +1,14 @@
 #container {
     background-color: darkblue;
 }
+
+label {
+    display: inline-block;
+    width: 300px;
+}
+
+#output {
+    display: inline-block;
+    width: 300px;
+    background-color: red;
+}
