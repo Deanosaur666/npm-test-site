@@ -14,7 +14,6 @@ let octokit = new Octokit({
 });
 
 let username = "";
-let email = "";
 const output = document.getElementById("output");
 output.textContent = "Welcome";
 const usernameField = document.getElementById("username");
